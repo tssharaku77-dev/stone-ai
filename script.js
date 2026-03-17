@@ -1,5 +1,5 @@
 // 1. あなたのAPIキーに書き換えてください
-const API_KEY = 'ここにあなたのAPIキーを貼る'; 
+const API_KEY = 'AIzaSyAaQoweIU7lGEy9M5N3V_aZVVQguGp2EZg'; 
 
 async function execute(type) {
     const inputElement = document.getElementById('stoneInput');
