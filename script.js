@@ -14,8 +14,8 @@ async function execute(type) {
 
     resultArea.innerHTML = '<p class="loading">石と共鳴中...</p>';
 
-    // 2026年現在、最も安定して動作するエンドポイントとモデル名
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`;
+    // 【修正】最新の安定版エンドポイント(v1)を使用
+    const url = `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${API_KEY}`;
 
     const prompt = type === 'diag' 
         ? `${input}という悩みに対して、癒やしとなる天然石を1つ選び、石の精霊として150文字以内でアドバイスしてください。最後に守護力を星5つ（★★★★★）で評価してください。`
@@ -32,7 +32,6 @@ async function execute(type) {
 
         const data = await response.json();
 
-        // APIキーが無効な場合の具体的なエラーハンドリング
         if (data.error) {
             throw new Error(data.error.message);
         }
@@ -41,12 +40,11 @@ async function execute(type) {
             const aiResponse = data.candidates[0].content.parts[0].text;
             resultArea.innerHTML = `<div class="response-text">${aiResponse.replace(/\n/g, '<br>')}</div>`;
         } else {
-            throw new Error("AIからの応答が解析できませんでした。");
+            throw new Error("AIからの応答が取得できませんでした。");
         }
 
     } catch (error) {
-        console.error("Error Details:", error);
-        // 画面に「理由」をはっきり表示させる
+        console.error("Error:", error);
         resultArea.innerHTML = `<p class="error-msg">⚠️ 共鳴失敗<br><small>理由: ${error.message}</small></p>`;
     }
 }
