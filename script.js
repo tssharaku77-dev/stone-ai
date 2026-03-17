@@ -3,7 +3,6 @@ const API_KEY = 'AIzaSyCc6r8kofeaN3Y6oalQQNkSZVEXmpTeBRU';
 async function execute(type) {
     const inputElement = document.getElementById('stoneInput');
     const resultArea = document.getElementById('resultArea');
-    
     if (!inputElement || !resultArea) return;
 
     const input = inputElement.value.trim();
@@ -14,12 +13,12 @@ async function execute(type) {
 
     resultArea.innerHTML = '<p class="loading">石と共鳴中...</p>';
 
-    // 【修正】最新の安定版エンドポイント(v1)を使用
-    const url = `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${API_KEY}`;
+    // 【2026年最新の解決策】v1beta + gemini-1.5-flash-latest の組み合わせ
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${API_KEY}`;
 
     const prompt = type === 'diag' 
         ? `${input}という悩みに対して、癒やしとなる天然石を1つ選び、石の精霊として150文字以内でアドバイスしてください。最後に守護力を星5つ（★★★★★）で評価してください。`
-        : `天然石「${input}」の【石言葉】【主な産地】【浄化方法】を箇条書きで分かりやすく解説してください。`;
+        : `天然石「${input}」の【石言葉】【主な産地】【浄化方法】を箇条書きで教えて。`;
 
     try {
         const response = await fetch(url, {
@@ -40,7 +39,7 @@ async function execute(type) {
             const aiResponse = data.candidates[0].content.parts[0].text;
             resultArea.innerHTML = `<div class="response-text">${aiResponse.replace(/\n/g, '<br>')}</div>`;
         } else {
-            throw new Error("AIからの応答が取得できませんでした。");
+            throw new Error("AIの応答形式が変更されています。");
         }
 
     } catch (error) {
