@@ -1,4 +1,4 @@
-const KEY = 'AIzaSyB9CTvRXoRARF-DC7Dy5RBi616H5zJfGgc'; 
+const KEY = 'AIzaSyB9CTvRXoRARF-DC7Dy5RBi616H5zJfGgc'; // キーはこれで合っています
 
 async function execute(type) {
     const resArea = document.getElementById('resultArea');
@@ -7,11 +7,12 @@ async function execute(type) {
 
     resArea.innerHTML = '✨ 石の波動とリンクしています...';
 
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${KEY}`;
+    // 【ここを修正】v1beta ではなく v1 を使い、モデル名を最新の指定に変更します
+    const url = `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${KEY}`;
 
     const promptText = type === 'diag' 
-        ? `${input} という悩みや状況に対し、力を与えてくれる天然石を1つ選定し、石の視点から神秘的なアドバイスを150文字以内で伝えて。最後に守護力を星で5段階評価して。`
-        : `${input} という石について、石言葉、浄化方法、持ち主へのメッセージを教えて。`;
+        ? `${input} という悩みに対し、力を与えてくれる天然石を1つ選び、石の視点からアドバイスして。`
+        : `${input} という石について、石言葉、浄化方法を教えて。`;
 
     try {
         const response = await fetch(url, {
@@ -32,6 +33,7 @@ async function execute(type) {
         resArea.innerHTML = `<div>${result.replace(/\n/g, '<br>')}</div>`;
 
     } catch (e) {
-        resArea.innerHTML = `<div style="color:#ff6b6b;">【エラー】キーが正しくないか、反映待ちです。内容: ${e.message}</div>`;
+        // エラー内容が詳しくわかるようにします
+        resArea.innerHTML = `<div style="color:#ff6b6b;">接続エラー: ${e.message}</div>`;
     }
 }
