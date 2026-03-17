@@ -1,11 +1,12 @@
-const API_KEY = 'AIzaSyAaQoweIU7lGEy9M5N3V_aZVVQguGp2EZg'; 
+// 1. あなたのAPIキーに書き換えてください
+const API_KEY = 'ここにあなたのAPIキーを貼る'; 
 
 async function execute(type) {
     const inputElement = document.getElementById('stoneInput');
     const resultArea = document.getElementById('resultArea');
     
     if (!inputElement || !resultArea) {
-        alert("システムエラー：画面の部品が見つかりません。");
+        alert("エラー：画面の部品が見つかりません。index.htmlを確認してください。");
         return;
     }
 
@@ -17,7 +18,7 @@ async function execute(type) {
 
     resultArea.innerHTML = '<p class="loading">石と共鳴中...</p>';
 
-    // 【修正ポイント】2026年現在の最新安定モデル gemini-2.0-flash を指定
+    // 2. モデル名を最新の「gemini-2.0-flash」に変更
     const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${API_KEY}`;
 
     const prompt = type === 'diag' 
@@ -35,14 +36,14 @@ async function execute(type) {
 
         const data = await response.json();
 
-        // データの存在を厳重にチェック
+        // 3. データの存在を厳重にチェック
         if (data.candidates && data.candidates[0] && data.candidates[0].content) {
             const aiResponse = data.candidates[0].content.parts[0].text;
             resultArea.innerHTML = `<div class="response-text">${aiResponse.replace(/\n/g, '<br>')}</div>`;
         } else {
-            // エラー内容が返ってきた場合に、より詳細を表示するように強化
-            const errorMsg = data.error ? data.error.message : "AIからの返答が空です。";
-            throw new Error(errorMsg);
+            // エラーの詳細を画面に出す
+            const msg = data.error ? data.error.message : "AIからの応答がありません。";
+            throw new Error(msg);
         }
 
     } catch (error) {
