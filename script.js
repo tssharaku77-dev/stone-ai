@@ -1,31 +1,32 @@
-async function execute(type) {
-    const inputElement = document.getElementById('stoneInput');
-    const resultArea = document.getElementById('resultArea');
-    const input = inputElement.value.trim();
-    if (!input) return alert('内容を入力してください。');
+// 新しく作った「無料専用アカウント」のキーをここに貼るだけ！
+const KEY = 'AIzaSyB9CTvRXoRARF-DC7Dy5RBi616H5zJfGgc'; 
 
-    resultArea.innerHTML = '<div class="loading">鑑定中...</div>';
+async function execute(type) {
+    const resArea = document.getElementById('resultArea');
+    const input = document.getElementById('stoneInput').value.trim();
+    if (!input) return;
+
+    resArea.innerHTML = '鑑定中...';
+
+    // 2026年最新のGemini 3 Flash 接続URL
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash:generateContent?key=${KEY}`;
 
     try {
-        // 直接Googleを叩かず、自分のサーバー（Vercel）のAPIを叩くようにします
-        const response = await fetch('/api/gemini', {
+        const response = await fetch(url, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ prompt: input, type: type })
+            body: JSON.stringify({
+                contents: [{ parts: [{ text: type === 'diag' ? input + "に合う石を1つ選び、150文字以内でアドバイスして。最後に守護力を星5つで評価して。" : input + "の石言葉、産地、浄化方法を教えて。" }] }]
+            })
         });
 
         const data = await response.json();
-        if (data.error) throw new Error(data.error);
+        const text = data.candidates[0].content.parts[0].text;
+        
+        // 鑑定結果をカッコよく表示
+        resArea.innerHTML = `<div style="background:rgba(255,255,255,0.1); padding:20px; border-radius:15px; border:1px solid #4af;">${text.replace(/\n/g, '<br>')}</div>`;
 
-        // 鑑定書風のレイアウトで表示
-        resultArea.innerHTML = `
-            <div class="result-card">
-                <h3>✨ 鑑定結果 ✨</h3>
-                <p>${data.text.replace(/\n/g, '<br>')}</p>
-                <div class="share-btn" onclick="location.href='https://twitter.com/intent/tweet?text=${encodeURIComponent(data.text)}'">SNSで結果をシェアする</div>
-            </div>
-        `;
     } catch (e) {
-        resultArea.innerHTML = `<p class="error">共鳴エラー: ${e.message}</p>`;
+        resArea.innerHTML = "エラー：キーを確認してください。";
     }
 }
