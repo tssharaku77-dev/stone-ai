@@ -5,49 +5,45 @@ async function execute(type) {
     const input = document.getElementById('stoneInput').value.trim();
     if (!input) return alert('入力してください');
 
-    resArea.innerHTML = '✨ 稼働可能なAIモデルを自動探索中...';
-
-    // 試行するモデルの全リスト
-    const models = [
-        'gemini-1.5-flash',
-        'gemini-1.5-flash-latest',
-        'gemini-1.5-pro',
-        'gemini-1.0-pro'
-    ];
-
-    const promptText = type === 'diag' ? `${input}に合う石を1つ選んでアドバイスして` : `${input}の石言葉を教えて`;
-
-    // 全てのモデルに対して同時に接続を試みる（一番早いものを採用）
-    const requests = models.map(async (model) => {
-        const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${KEY}`;
-        const response = await fetch(url, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ contents: [{ parts: [{ text: promptText }] }] })
-        });
-        const data = await response.json();
-        if (data.error) throw new Error(`${model}: ${data.error.message}`);
-        return { model, text: data.candidates[0].content.parts[0].text };
-    });
+    resArea.innerHTML = '✨ あなたのキーで動くAIを探しています...';
 
     try {
-        // 最初に成功したモデルの結果を採用
-        const result = await Promise.any(requests);
+        // 1. まず、あなたのキーで「今使えるモデルの一覧」をGoogleに直接聞く
+        const listUrl = `https://generativelanguage.googleapis.com/v1beta/models?key=${KEY}`;
+        const listRes = await fetch(listUrl);
+        const listData = await listRes.json();
+
+        if (!listData.models) {
+            throw new Error("使えるモデルが見つかりません。キーの設定を確認してください。");
+        }
+
+        // 2. 「generateContent」に対応しているモデルを1つ見つける
+        const targetModel = listData.models.find(m => m.supportedGenerationMethods.includes('generateContent'));
+
+        if (!targetModel) {
+            throw new Error("実行可能なモデルがありません。");
+        }
+
+        const modelName = targetModel.name; // 例: models/gemini-pro
+        resArea.innerHTML = `✨ ${modelName} に接続中...`;
+
+        // 3. 見つかったモデルで実行する
+        const runUrl = `https://generativelanguage.googleapis.com/v1beta/${modelName}:generateContent?key=${KEY}`;
+        const runRes = await fetch(runUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ contents: [{ parts: [{ text: input + "について、石の鑑定をして。" }] }] })
+        });
+
+        const runData = await runRes.json();
+        const text = runData.candidates[0].content.parts[0].text;
+        
         resArea.innerHTML = `
-            <div style="font-size:0.8em; color:#888; margin-bottom:5px;">使用モデル: ${result.model}</div>
-            <div style="background:rgba(255,255,255,0.1); padding:15px; border-radius:10px;">
-                ${result.text.replace(/\n/g, '<br>')}
-            </div>
+            <div style="font-size:0.8em; color:#888;">成功モデル: ${modelName}</div>
+            <div style="margin-top:10px;">${text.replace(/\n/g, '<br>')}</div>
         `;
-    } catch (aggregateError) {
-        // 全てのモデルが全滅した場合
-        console.error(aggregateError);
-        resArea.innerHTML = `
-            <div style="color:#ff6b6b; padding:10px; border:1px solid red;">
-                【全モデル接続失敗】<br>
-                原因：${aggregateError.errors[0]}<br><br>
-                ※キーがActiveか、AI Studioで規約同意済みか確認してください。
-            </div>
-        `;
+
+    } catch (e) {
+        resArea.innerHTML = `<div style="color:#ff6b6b;">致命的エラー: ${e.message}</div>`;
     }
 }
