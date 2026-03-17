@@ -1,3 +1,5 @@
+// バージョン確認用（画面に表示されます）
+const VERSION = "2026-03-17-FINAL";
 const API_KEY = 'AIzaSyCc6r8kofeaN3Y6oalQQNkSZVEXmpTeBRU'; 
 
 async function execute(type) {
@@ -11,41 +13,37 @@ async function execute(type) {
         return;
     }
 
-    resultArea.innerHTML = '<p class="loading">石と共鳴中...</p>';
+    // 今のプログラムが最新か確認するためにバージョンを表示
+    resultArea.innerHTML = `<p class="loading">石と共鳴中... (Ver: ${VERSION})</p>`;
 
-    // 【これが2026年最新の正解URLです】
-    // v1beta を使い、モデル名は gemini-1.5-flash で指定
+    // 【完全修正】APIキーの種類を問わず最も安定する v1beta を使用
     const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`;
-
-    const prompt = type === 'diag' 
-        ? `${input}という悩みに対して、癒やしとなる天然石を1つ選び、石の精霊として150文字以内でアドバイスしてください。最後に守護力を星5つ（★★★★★）で評価してください。`
-        : `天然石「${input}」の【石言葉】【主な産地】【浄化方法】を箇条書きで分かりやすく教えて。`;
 
     try {
         const response = await fetch(url, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-                contents: [{ parts: [{ text: prompt }] }]
+                contents: [{ parts: [{ text: type === 'diag' ? input + "に合う石を教えて。最後に守護力を星5つで評価して。" : input + "の詳細を教えて。" }] }]
             })
         });
 
         const data = await response.json();
 
-        // エラーの詳細を画面に出す
         if (data.error) {
             throw new Error(data.error.message);
         }
 
-        if (data.candidates && data.candidates[0] && data.candidates[0].content) {
+        if (data.candidates && data.candidates[0].content) {
             const aiResponse = data.candidates[0].content.parts[0].text;
             resultArea.innerHTML = `<div class="response-text">${aiResponse.replace(/\n/g, '<br>')}</div>`;
         } else {
-            throw new Error("AIが一時的に混み合っています。");
+            throw new Error("AIからの応答が空です。");
         }
 
     } catch (error) {
         console.error("Error:", error);
-        resultArea.innerHTML = `<p class="error-msg">⚠️ 共鳴失敗<br><small>理由: ${error.message}</small></p>`;
+        // エラー理由をより詳細に表示
+        resultArea.innerHTML = `<p class="error-msg">⚠️ 共鳴失敗<br><small>理由: ${error.message}</small><br><small>URL: v1beta/gemini-1.5-flash</small></p>`;
     }
 }
