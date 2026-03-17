@@ -11,21 +11,18 @@ async function execute(type) {
         return;
     }
 
-    resultArea.innerHTML = '<p class="loading">石と共鳴中... (最新版実行中)</p>';
+    // 最新版であることを確認するための目印
+    resultArea.innerHTML = '<p class="loading">石と共鳴中... (Final Update版)</p>';
 
-    // 【2026年最新】最も安定する「v1」と「gemini-1.5-flash」の正しい組み合わせ
-    const url = `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${API_KEY}`;
-
-    const prompt = type === 'diag' 
-        ? `${input}という悩みに対して、癒やしとなる天然石を1つ選び、石の精霊として150文字以内でアドバイスしてください。最後に守護力を星5つ（★★★★★）で評価してください。`
-        : `天然石「${input}」の【石言葉】【主な産地】【浄化方法】を箇条書きで教えてください。`;
+    // 【これが解決策】モデル名に「-001」というバージョン番号を付与
+    const url = `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash-001:generateContent?key=${API_KEY}`;
 
     try {
         const response = await fetch(url, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-                contents: [{ parts: [{ text: prompt }] }]
+                contents: [{ parts: [{ text: type === 'diag' ? input + "に合う天然石を1つ選び、150文字以内で癒やしのアドバイスをして。最後に守護力を星5つで評価して。" : input + "の石言葉を教えて。" }] }]
             })
         });
 
@@ -39,7 +36,7 @@ async function execute(type) {
             const aiResponse = data.candidates[0].content.parts[0].text;
             resultArea.innerHTML = `<div class="response-text">${aiResponse.replace(/\n/g, '<br>')}</div>`;
         } else {
-            throw new Error("AIが応答できませんでした。");
+            throw new Error("AIの応答形式が異なります。");
         }
 
     } catch (error) {
