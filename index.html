@@ -3,18 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>天然石チャット鑑定</title>
+    <title>天然石・守護石鑑定システム</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div class="container">
-        <h1>天然石・守護石鑑定</h1>
+        <h1>天然石チャット鑑定</h1>
         
-        <textarea id="stoneInput" placeholder="お悩みや、気になる石の名前を入力してください..."></textarea>
+        <div class="input-section">
+            <textarea id="stoneInput" placeholder="お悩みや、調べたい石の名前を入力してください..."></textarea>
+        </div>
         
         <div class="button-group">
-            <button onclick="execute('diag')">石の声を聴く</button>
-            <button onclick="execute('wiki')">石図鑑を調べる</button>
+            <button onclick="execute('diag')">石の声を聴く（鑑定）</button>
+            <button onclick="execute('wiki')">石の情報を調べる（図鑑）</button>
         </div>
 
         <div id="resultArea"></div>
