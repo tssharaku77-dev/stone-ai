@@ -1,7 +1,8 @@
-/* 全体の背景：神秘的な宇宙・深夜をイメージ */
+/* ベース：高級感のある深い漆黒 */
 body {
-    background: radial-gradient(circle at center, #1a1a2e 0%, #020205 100%);
-    color: #e0e0e0;
+    background-color: #0a0a0c;
+    background-image: radial-gradient(circle at 50% 50%, #1a1a2e 0%, #0a0a0c 100%);
+    color: #ffffff;
     font-family: 'Helvetica Neue', Arial, 'Hiragino Kaku Gothic ProN', sans-serif;
     display: flex;
     justify-content: center;
@@ -12,98 +13,87 @@ body {
 
 .container {
     width: 90%;
-    max-width: 500px;
-    background: rgba(255, 255, 255, 0.05);
+    max-width: 450px;
+    background: #16161a;
     padding: 30px;
-    border-radius: 20px;
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
-    text-align: center;
+    border-radius: 16px;
+    border: 1px solid #333; /* 落ち着いた縁取り */
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.9);
 }
 
 h1 {
-    font-size: 1.5rem;
-    color: #fff;
-    text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+    font-size: 1.4rem;
+    letter-spacing: 0.1em;
+    color: #f1f1f1;
     margin-bottom: 25px;
 }
 
-/* 入力欄：透き通るような質感 */
+/* 入力欄：視認性重視の白背景に近いライトグレー */
 textarea {
     width: 100%;
-    height: 100px;
-    background: rgba(0, 0, 0, 0.3);
-    border: 1px solid #444;
-    border-radius: 12px;
-    color: #fff;
+    height: 120px;
+    background: #f8f9fa; /* 文字が一番読みやすい色 */
+    border: none;
+    border-radius: 8px;
+    color: #1a1a1a; /* 黒文字でハッキリ */
     padding: 15px;
-    font-size: 1rem;
+    font-size: 1.1rem;
     box-sizing: border-box;
     margin-bottom: 20px;
-    resize: none;
     outline: none;
 }
 
-textarea:focus {
-    border-color: #88d8ff;
-    box-shadow: 0 0 8px rgba(136, 216, 255, 0.4);
-}
-
-/* ボタン：宝石のような光沢と立体感 */
+/* ボタン：視認性を極限まで高めた配色 */
 .button-group {
     display: flex;
-    gap: 15px;
-    margin-bottom: 25px;
+    gap: 12px;
 }
 
 button {
     flex: 1;
-    padding: 12px 5px;
-    font-size: 0.9rem;
-    font-weight: bold;
-    color: #fff;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    border: none;
-    border-radius: 50px;
+    padding: 16px 5px;
+    font-size: 1rem;
+    font-weight: 900; /* 極太 */
     cursor: pointer;
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 15px rgba(118, 75, 162, 0.4);
+    border-radius: 8px;
+    border: none;
+    transition: 0.2s;
+    letter-spacing: 0.05em;
+}
+
+/* 左：鑑定ボタン（信頼感のあるディープブルー） */
+button:first-child {
+    background-color: #0056b3;
+    color: #ffffff;
+    box-shadow: 0 4px 0 #003d80; /* 立体感 */
+}
+
+/* 右：図鑑ボタン（高級感のあるゴールド・アンバー） */
+button:last-child {
+    background-color: #d4a017;
+    color: #ffffff;
+    box-shadow: 0 4px 0 #a67c00;
 }
 
 button:hover {
+    filter: brightness(1.1);
     transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(118, 75, 162, 0.6);
-    filter: brightness(1.2);
 }
 
 button:active {
-    transform: translateY(1px);
+    transform: translateY(2px);
+    box-shadow: none;
 }
 
-/* 右側のボタン（図鑑用）は色を変えてアクセントに */
-button:last-child {
-    background: linear-gradient(135deg, #2af598 0%, #009efd 100%);
-    box-shadow: 0 4px 15px rgba(0, 158, 253, 0.4);
-}
-
-/* 結果表示エリア */
+/* 結果表示：読みやすさの極致 */
 #resultArea {
-    margin-top: 20px;
+    margin-top: 25px;
+    background: #222;
+    padding: 20px;
+    border-radius: 8px;
+    border-left: 4px solid #d4a017;
+    line-height: 1.7;
+    font-size: 1.1rem;
+    color: #ffffff;
     text-align: left;
-    line-height: 1.6;
-    font-size: 0.95rem;
-    color: #f0f0f0;
-}
-
-.loading {
-    color: #88d8ff;
-    font-style: italic;
-    animation: pulse 1.5s infinite;
-}
-
-@keyframes pulse {
-    0% { opacity: 0.5; }
-    50% { opacity: 1; }
-    100% { opacity: 0.5; }
 }
